@@ -6,7 +6,7 @@ PyCanary
    ╱         ╱         ╱╱        ╱         ╱         ╱         ╱         ╱         ╱
   ╱╱      __╱╲__      ╱       --╱         ╱         ╱         ╱        _╱╲__      ╱
   ╲╲_____╱     ╲_____╱╲________╱╲___╱____╱╲__╱_____╱╲___╱____╱╲____╱___╱   ╲_____╱
-             {GitHub:https://github.com/RogueCyberSecurityChannel} </pre>
+               {GitHub:https://github.com/RogueCyberSecurityChannel} </pre>
 
 
 - Create a .txt file with paths to the directories you would like to monitor
