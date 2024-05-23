@@ -1,14 +1,14 @@
 PyCanary 
 ----------------------------
 
-```sh
+
      ________  ________   _______  ________  ________  ________  ________  ________
     ╱        ╲╱    ╱   ╲╱╱       ╲╱        ╲╱    ╱   ╲╱        ╲╱        ╲╱    ╱   ╲
    ╱         ╱         ╱╱        ╱         ╱         ╱         ╱         ╱         ╱
   ╱╱      __╱╲__      ╱       --╱         ╱         ╱         ╱        _╱╲__      ╱
   ╲╲_____╱     ╲_____╱╲________╱╲___╱____╱╲__╱_____╱╲___╱____╱╲____╱___╱   ╲_____╱
 
-               {GitHub:https://github.com/RogueCyberSecurityChannel}```
+               {GitHub:https://github.com/RogueCyberSecurityChannel}
 
 - Create a .txt file with paths to the directories you would like to monitor
 - Pass in the path to that .txt file using the -pF command Example: -pF <dir_paths.txt> 
