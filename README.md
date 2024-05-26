@@ -17,8 +17,6 @@ PyCanary
 - Ongoing logging both in the  background and upon file access
 - Simple, lightweight, and highly effective
 
--Testing stages... bear with me...
-
 git clone
 ```sh
 git clone https://github.com/RogueCyberSecurityChannel/PyCanary-Python-Canary-Token-Alternative
