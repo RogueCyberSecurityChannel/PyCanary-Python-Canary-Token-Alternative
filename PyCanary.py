@@ -34,13 +34,7 @@ def welcome():
 
                {GitHub:https://github.com/RogueCyberSecurityChannel}''')
 
-def header():
-    date_and_time= date_time()
-    date = date_and_time[0] + " " + date_and_time[1]
-    year = date_and_time[2]
-    time = date_and_time[3]
-
-
+def header(date, year, time):
     header_file = f"""
 ********************************************************
                       PyCanary Log
@@ -97,7 +91,11 @@ def pop_up(message):
     ctypes.windll.user32.MessageBoxW(0, message, "PyCanary Alert", 16)
 
 def process_monitor():
-    header_file = header()
+    date_and_time= date_time()
+    date = date_and_time[0] + " " + date_and_time[1]
+    year = date_and_time[2]
+    time = date_and_time[3]
+    header_file = header(date, year, time)
     log_to_file(header_file)
     pythoncom.CoInitialize()
     c = wmi.WMI()
@@ -121,6 +119,8 @@ def process_monitor():
             border ="===================================================================================================================================================="
             log_to_file(border)
             log_to_file(process_log_message)
+        except wmi.x_wmi as e:
+            pass
         except Exception as e:
             print(str(e))
             return
@@ -184,9 +184,9 @@ def wmic_query():
         return processes
     except subprocess.CalledProcessError:
         print("Error: Unable to retrieve running processes.")
-        return []
+        return
     except Exception:
-        pass
+        return
 
 def extract_pid(processes, filename):
     try:
@@ -283,12 +283,11 @@ def canary(dir_path):
                             processes = wmic_query()
                             pid = extract_pid(processes, filename)
                             print(f"\n [!] FILE ACCESSED!\n [*] File: {file_path} was accessed!")
-                            time.sleep(2)
                             if pid != None:
                                 process_info = get_process_info(pid)
                                 pop_up_thread = threading.Thread(target=pop_up,args=(f"[+] File Accessed!\n[+] File: {file_path} was accessed!",))
                                 pop_up_thread.start()
-                                print(f'\n [!] [↓ ↓ ↓ ↓] Access process information [↓ ↓ ↓ ↓]')
+                                print(f' [!] [↓ ↓ ↓ ↓] Access process information [↓ ↓ ↓ ↓]')
                                 print(f' [*] Access time: {time_stamp}')
                                 print(f' [*] Pid: {process_info["pid"]}')
                                 print(f' [*] Process name: {process_info["name"]}')
@@ -304,9 +303,9 @@ def canary(dir_path):
                             else:
                                 pop_up_thread = threading.Thread(target=pop_up,args=(f"[+] File Accessed!\n[+] File: {file_path} was accessed!",))
                                 pop_up_thread.start()
-                                print(f'\n [!] Unable to determine access process')
+                                print(f' [!] Unable to determine access process')
                                 print(f' [+] {file_name} was accessed at [{time_stamp}]')
-                                print(f' [!] Review "PyCanary_log.csv" for potentially malicious processes')
+                                print(f' [!] Review "PyCanary_log.csv" for more information')
                                 pop_up_thread.join()
                     last_access_times[file_path] = access_time
             time.sleep(1)
