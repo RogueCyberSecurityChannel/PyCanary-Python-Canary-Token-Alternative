@@ -1,0 +1,7 @@
+argparse==1.4.0
+ctypes-win32==0.2.5
+psutil==5.9.0
+pythoncom==0.1.6
+pywin32==301
+subprocess32==3.5.4
+WMI==1.5.1
