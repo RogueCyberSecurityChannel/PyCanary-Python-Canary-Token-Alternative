@@ -77,6 +77,7 @@ def date_time():
 def log_to_file(message):
     with open('PyCanary_log.csv', 'a') as fd:
         fd.write(f'{message}\r\n')
+
 def read_paths_from_file(file_path):
     paths_list = []
 
@@ -184,6 +185,8 @@ def wmic_query():
     except subprocess.CalledProcessError:
         print("Error: Unable to retrieve running processes.")
         return []
+    except Exception:
+        pass
 
 def extract_pid(processes, filename):
     try:
@@ -198,11 +201,10 @@ def extract_pid(processes, filename):
                                 pid = (int(raw_pid))
                                 return pid
                             return False
-    except Exception as e:
-        print(str(e))
+    except Exception:
         return
 
-def monitor(path_to_watch):
+def win32_api_dir_monitor(path_to_watch):
     h_directory = win32file.CreateFile(
         path_to_watch,
         FILE_LIST_DIRECTORY,
@@ -230,39 +232,39 @@ def monitor(path_to_watch):
             for action, file_name in results:
                 full_filename = os.path.join(path_to_watch, file_name)
                 if action == FILE_CREATED:
-                    pop_thread = threading.Thread(target=pop_up,args=(f'[+] File Created: {full_filename}',))
-                    pop_thread.start()
+                    pop_up_thread = threading.Thread(target=pop_up,args=(f'[+] File Created: {full_filename}',))
+                    pop_up_thread.start()
                     print(f' [+] File created!')
                     print(f' \n [+] File: {full_filename}')
-                    pop_thread.join()
+                    pop_up_thread.join()
                 elif action == FILE_DELETED:
-                    pop_thread = threading.Thread(target=pop_up,args=(f'[+] File deleted {full_filename}',))
-                    pop_thread.start()
+                    pop_up_thread = threading.Thread(target=pop_up,args=(f'[+] File deleted {full_filename}',))
+                    pop_up_thread.start()
                     print(f' [-] File deleted!')
                     print(f' \n [-] File deleted: {full_filename}')
-                    pop_thread.join()
+                    pop_up_thread.join()
                 elif action == FILE_MODIFIED:
-                    pop_thread = threading.Thread(target=pop_up,args=(f'[+] File modified\n [+] File: {full_filename}',))
-                    pop_thread.start()
+                    pop_up_thread = threading.Thread(target=pop_up,args=(f'[+] File modified\n [+] File: {full_filename}',))
+                    pop_up_thread.start()
                     print(f' [*] File modified!')
                     print(f' \n [+] File: {full_filename}')
-                    pop_thread.join()
+                    pop_up_thread.join()
                 elif action == FILE_RENAMED_FROM:
-                    pop_thread = threading.Thread(target=pop_up,args=(f'[>] File renamed from {full_filename}',))
-                    pop_thread.start()
+                    pop_up_thread = threading.Thread(target=pop_up,args=(f'[>] File renamed from {full_filename}',))
+                    pop_up_thread.start()
                     print(f' \n [>] File renamed from {full_filename}')
-                    pop_thread.join()
+                    pop_up_thread.join()
                 elif action == FILE_RENAMED_TO:
-                    pop_thread = threading.Thread(target=pop_up,args=(f'[<] File renamed to {full_filename}',))
-                    pop_thread.start()
+                    pop_up_thread = threading.Thread(target=pop_up,args=(f'[<] File renamed to {full_filename}',))
+                    pop_up_thread.start()
                     print(f' \n [<] File renamed to {full_filename}')
-                    pop_thread.join()
+                    pop_up_thread.join()
                 else:
-                    pop_thread = threading.Thread(target=pop_up,args=(f'[?] Unknown action on {full_filename}',))
-                    pop_thread.start()
+                    pop_up_thread = threading.Thread(target=pop_up,args=(f'[?] Unknown action on {full_filename}',))
+                    pop_up_thread.start()
                     print(f' \n [?] Unknown action on {full_filename}')
                     pop_up()
-                    pop_thread.join()
+                    pop_up_thread.join()
         except Exception:
             sys.exit(1)
 
@@ -284,8 +286,8 @@ def canary(dir_path):
                             time.sleep(2)
                             if pid != None:
                                 process_info = get_process_info(pid)
-                                pop_thread = threading.Thread(target=pop_up,args=(f"[+] File Accessed!\n[+] File: {file_path} was accessed!",))
-                                pop_thread.start()
+                                pop_up_thread = threading.Thread(target=pop_up,args=(f"[+] File Accessed!\n[+] File: {file_path} was accessed!",))
+                                pop_up_thread.start()
                                 print(f'\n [!] [↓ ↓ ↓ ↓] Access process information [↓ ↓ ↓ ↓]')
                                 print(f' [*] Access time: {time_stamp}')
                                 print(f' [*] Pid: {process_info["pid"]}')
@@ -298,14 +300,14 @@ def canary(dir_path):
                                     print(f' [*] Connections: {process_info["connections"]}')
                                 print(f' [+] Review "PyCanary_log.csv" for more information')
                                 print(f' [!] [↑ ↑ ↑ ↑] Access process information [↑ ↑ ↑ ↑]')
-                                pop_thread.join()
+                                pop_up_thread.join()
                             else:
-                                pop_thread = threading.Thread(target=pop_up,args=(f"[+] File Accessed!\n[+] File: {file_path} was accessed!",))
-                                pop_thread.start()
+                                pop_up_thread = threading.Thread(target=pop_up,args=(f"[+] File Accessed!\n[+] File: {file_path} was accessed!",))
+                                pop_up_thread.start()
                                 print(f'\n [!] Unable to determine access process')
-                                print(f' [+] {file_name} was accesses at [{time_stamp}]')
+                                print(f' [+] {file_name} was accessed at [{time_stamp}]')
                                 print(f' [!] Review "PyCanary_log.csv" for potentially malicious processes')
-                                pop_thread.join()
+                                pop_up_thread.join()
                     last_access_times[file_path] = access_time
             time.sleep(1)
     except Exception as e:
@@ -342,6 +344,7 @@ def main():
         welcome()
         args = parse_args()
         if args.path_file:
+            animation_thread = threading.Thread(target=running_animation, daemon=True)
             process_monitor_thread = threading.Thread(target=process_monitor, daemon=True)
             process_monitor_thread.start()
             print('\n [+] Process monitor started')
@@ -349,11 +352,10 @@ def main():
             paths = read_paths_from_file(args.path_file)
             for path in paths:
                 canary_thread = threading.Thread(target=canary, args=(path,), daemon=True)
-                monitor_thread = threading.Thread(target=monitor, args=(path,), daemon=True)
-                animation_thread = threading.Thread(target=running_animation, daemon=True)
-                monitor_thread.start()
+                win32_api_dir_monitor_thread = threading.Thread(target=win32_api_dir_monitor, args=(path,), daemon=True)
+                win32_api_dir_monitor_thread.start()
                 canary_thread.start()
-                animation_thread.start()
+            animation_thread.start()
         while True:
             time.sleep(0.1)
     except KeyboardInterrupt:
