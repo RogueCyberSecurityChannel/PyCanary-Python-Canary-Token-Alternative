@@ -10,7 +10,7 @@ PyCanary
 
 
 - Create a .txt file of directory paths you would like to monitor
-- Pass in the path to that .txt file using the -pF command. Example: -pF <./dir_paths.txt> 
+- Pass in the path to the .txt file using the -pF command. Example: -pF <./dir_paths.txt> 
 - Wait to see if the files are accessed
 - Windows Alert box will pop up if any file in the specified directories are accessed or altered
 - Fully implemented process monitoring & logging
